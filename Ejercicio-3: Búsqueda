@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define ARRAY_SIZE 50000
+#define NUM_EXECUTIONS 100
+
+// Función para realizar la búsqueda secuencial
+int busquedaSecuencial(int arreglo[], int n, int x) {
+	int i;
+	
+    for (i = 0; i < n; i++) {
+        if (arreglo[i] == x) {
+            return i; // Retorna la posición si encuentra el elemento
+        }
+    }
+    return -1; // Retorna -1 si no encuentra el elemento
+}
+
+// Función para realizar la búsqueda binaria (requiere un arreglo ordenado)
+int busquedaBinaria(int arreglo[], int inicio, int fin, int x) {
+    while (inicio <= fin) {
+        int medio = inicio + (fin - inicio) / 2;
+
+        if (arreglo[medio] == x) {
+            return medio; 
+        }
+        if (arreglo[medio] < x) {
+            inicio = medio + 1;
+        } else {
+            fin = medio - 1;
+        }
+    }
+
+    return -1;
+}
+
+int main() {
+    int arreglo[ARRAY_SIZE];
+    srand(time(NULL));
+	int i,j;
+    // Generar un arreglo ordenado
+    for (i = 0; i < ARRAY_SIZE; i++) {
+        arreglo[i] = i;
+    }
+
+    // Realizar 100 ejecuciones independientes de búsqueda para cada algoritmo
+    clock_t inicio, fin;
+    double tiempo_total_secuencial = 0, tiempo_total_binaria = 0;
+    double tiempo_min_secuencial = __DBL_MAX__, tiempo_max_secuencial = 0;
+    double tiempo_min_binaria = __DBL_MAX__, tiempo_max_binaria = 0;
+
+    for (i = 0; i < NUM_EXECUTIONS; i++) {
+        int numero_a_buscar = rand() % ARRAY_SIZE;
+
+        // Búsqueda Secuencial
+        inicio = clock();
+        busquedaSecuencial(arreglo, ARRAY_SIZE, numero_a_buscar);
+        fin = clock();
+        double tiempo_secuencial = ((double)fin - inicio) * 1000 / CLOCKS_PER_SEC;
+        tiempo_total_secuencial += tiempo_secuencial;
+
+        if (tiempo_secuencial < tiempo_min_secuencial) {
+            tiempo_min_secuencial = tiempo_secuencial;
+        }
+
+        if (tiempo_secuencial > tiempo_max_secuencial) {
+            tiempo_max_secuencial = tiempo_secuencial;
+        }
+
+        // Búsqueda Binaria
+        inicio = clock();
+        busquedaBinaria(arreglo, 0, ARRAY_SIZE - 1, numero_a_buscar);
+        fin = clock();
+        double tiempo_binaria = ((double)fin - inicio) * 1000 / CLOCKS_PER_SEC;
+        tiempo_total_binaria += tiempo_binaria;
+
+        if (tiempo_binaria < tiempo_min_binaria) {
+            tiempo_min_binaria = tiempo_binaria;
+        }
+
+        if (tiempo_binaria > tiempo_max_binaria) {
+            tiempo_max_binaria = tiempo_binaria;
+        }
+    }
+
+    // Calcular y presentar estadísticas resumidas
+    printf("Búsqueda Secuencial:\n");
+    printf("Tiempo promedio: %.6f ms\n", tiempo_total_secuencial / NUM_EXECUTIONS);
+    printf("Tiempo mínimo: %.6f ms\n", tiempo_min_secuencial);
+    printf("Tiempo máximo: %.6f ms\n", tiempo_max_secuencial);
+
+    printf("\nBúsqueda Binaria:\n");
+    printf("Tiempo promedio: %.6f ms\n", tiempo_total_binaria / NUM_EXECUTIONS);
+    printf("Tiempo mínimo: %.6f ms\n", tiempo_min_binaria);
+    printf("Tiempo máximo: %.6f ms\n", tiempo_max_binaria);
+
+    return 0;
+}

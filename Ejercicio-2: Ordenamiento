@@ -1,0 +1,180 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define ARRAY_SIZE 10000
+#define NUM_EXECUTIONS 100
+
+void imprimirArreglo(int arreglo[]) {
+	int i;
+    for (i=0; i<10000; i++) {
+        printf("%d ", arreglo[i]);
+    }
+    printf("\n");
+}
+
+// Algoritmo de ordenamiento: Insertion Sort
+void insertionSort(int arreglo[], int n) {
+	int i;
+	
+    for (i = 1; i < n; i++) {
+        int key = arreglo[i];
+        int j = i - 1;
+
+        while (j >= 0 && arreglo[j] > key) {
+            arreglo[j + 1] = arreglo[j];
+            j = j - 1;
+        }
+
+        arreglo[j + 1] = key;
+    }
+}
+
+// Algoritmo de ordenamiento: Quick Sort
+void quickSort(int arreglo[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arreglo, low, high);
+
+        quickSort(arreglo, low, pi - 1);
+        quickSort(arreglo, pi + 1, high);
+    }
+}
+
+// Función auxiliar para Quick Sort (Partición)
+int partition(int arreglo[], int low, int high) {
+    int pivot = arreglo[high];
+    int i = low - 1;
+    int j;
+
+    for (j = low; j <= high - 1; j++) {
+        if (arreglo[j] < pivot) {
+            i++;
+            swap(&arreglo[i], &arreglo[j]);
+        }
+    }
+
+    swap(&arreglo[i + 1], &arreglo[high]);
+    return i + 1;
+}
+
+// Función auxiliar para Quick Sort (Intercambio)
+int swap(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+// Algoritmo de ordenamiento: Bubble Sort
+void bubbleSort(int arreglo[], int n) {
+	int j,i;
+	
+    for ( i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (arreglo[j] > arreglo[j + 1]) {
+                swap(&arreglo[j], &arreglo[j + 1]);
+            }
+        }
+    }
+}
+
+int main() {
+    int arreglo[10000];
+    srand(time(NULL));
+	int i,j;
+    // Generar un arreglo aleatorio
+    for (i=0; i<10000; i++) {
+        arreglo[i]=rand()%(10000+1-1)+1; 
+    }
+
+    // Algoritmo de ordenamiento: Insertion Sort
+    clock_t inicio, fin;
+    double tiempo_total_insertion = 0, tiempo_min_insertion = __DBL_MAX__, tiempo_max_insertion = 0;
+
+    for (i=0; i<NUM_EXECUTIONS; i++) {
+        int arreglo_copia[10000];
+        for (j=0;j <10000; j++) {
+            arreglo_copia[j] = arreglo[j];
+        }
+
+        inicio = clock();
+        insertionSort(arreglo_copia, 10000);
+        fin = clock();
+
+        double tiempo_insertion = ((double)fin - inicio) * 1000 / CLOCKS_PER_SEC;
+        tiempo_total_insertion += tiempo_insertion;
+
+        if (tiempo_insertion < tiempo_min_insertion) {
+            tiempo_min_insertion = tiempo_insertion;
+        }
+
+        if (tiempo_insertion > tiempo_max_insertion) {
+            tiempo_max_insertion = tiempo_insertion;
+        }
+    }
+    
+    double tiempo_total_quick = 0, tiempo_min_quick = __DBL_MAX__, tiempo_max_quick = 0;
+    for (i=0; i<NUM_EXECUTIONS; i++) {
+        int arreglo_copia[10000];
+        for ( j = 0; j<10000; j++) {
+            arreglo_copia[j] = arreglo[j];
+        }
+
+        inicio = clock();
+        quickSort(arreglo_copia, 0, 10000 - 1);
+        fin = clock();
+
+        double tiempo_quick = ((double)fin - inicio) * 1000 / CLOCKS_PER_SEC;
+        tiempo_total_quick += tiempo_quick;
+
+        if (tiempo_quick < tiempo_min_quick) {
+            tiempo_min_quick = tiempo_quick;
+        }
+
+        if (tiempo_quick > tiempo_max_quick) {
+            tiempo_max_quick = tiempo_quick;
+        }
+    }
+
+    // Algoritmo de ordenamiento: Bubble Sort
+    double tiempo_total_bubble = 0, tiempo_min_bubble = __DBL_MAX__, tiempo_max_bubble = 0;
+
+    for (i = 0; i < NUM_EXECUTIONS; i++) {
+        int arreglo_copia[10000];
+        for ( j = 0; j < 10000; j++) {
+            arreglo_copia[j] = arreglo[j];
+        }
+
+        inicio = clock();
+        bubbleSort(arreglo_copia, 10000);
+        fin = clock();
+
+        double tiempo_bubble = ((double)fin - inicio) * 1000 / CLOCKS_PER_SEC;
+        tiempo_total_bubble += tiempo_bubble;
+
+        if (tiempo_bubble < tiempo_min_bubble) {
+            tiempo_min_bubble = tiempo_bubble;
+        }
+
+        if (tiempo_bubble > tiempo_max_bubble) {
+            tiempo_max_bubble = tiempo_bubble;
+        }
+    }
+
+    // Presentar estadísticas resumidas
+    printf("Insertion Sort:\n");
+    printf("Tiempo promedio: %.6f ms\n", tiempo_total_insertion / NUM_EXECUTIONS);
+    printf("Tiempo mínimo: %.6f ms\n", tiempo_min_insertion);
+    printf("Tiempo máximo: %.6f ms\n\n", tiempo_max_insertion);
+
+    printf("Quick Sort:\n");
+    printf("Tiempo promedio: %.6f ms\n", tiempo_total_quick / NUM_EXECUTIONS);
+    printf("Tiempo mínimo: %.6f ms\n", tiempo_min_quick);
+    printf("Tiempo máximo: %.6f ms\n\n", tiempo_max_quick);
+
+    printf("Bubble Sort:\n");
+    printf("Tiempo promedio: %.6f ms\n", tiempo_total_bubble / NUM_EXECUTIONS);
+    printf("Tiempo mínimo: %.6f ms\n", tiempo_min_bubble);
+    printf("Tiempo máximo: %.6f ms\n", tiempo_max_bubble);
+
+    return 0;
+}
